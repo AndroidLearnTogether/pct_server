@@ -52,6 +52,22 @@ public class RestTestController {
 
         return "파일 업로드가 완료되었습니다.";
     }
+
+    @PostMapping("/ls")
+    public String testLi(@RequestParam("name") String name) throws IOException, DataException {
+        Resource resource = new PathResource("C:\\Users\\user\\git\\pct_server\\src\\main\\resources\\static\\" + name);
+        InputStream inputStream = resource.getInputStream();
+        byte[] data = FileCopyUtils.copyToByteArray(inputStream);
+        String tester = "";
+
+        int i = 0;
+        while (i < 3000) {
+            tester = tester + i + " : " + (data[i] & 0xFF) + ' ' + new String(new byte[] {data[i]}) + '\n';
+            i++;
+        }
+
+        return tester;
+    }
     @PostMapping("/l")
     public String testL(@RequestParam("name") String name) throws IOException, DataException {
         Resource resource = new PathResource("C:\\Users\\user\\git\\pct_server\\src\\main\\resources\\static\\" + name);
@@ -60,27 +76,96 @@ public class RestTestController {
 
         //시그니처 검증
         if(!Arrays.equals(Arrays.copyOfRange(data, 0, 4), new byte[] {56, 66, 80, 83})) {
-            throw new DataException("Signature not match");
+            return "Signature not match";
         }
         //버전 확인/검증
         if(!Arrays.equals(Arrays.copyOfRange(data, 4, 6), new byte[] {0, 1})) {
             if(!Arrays.equals(Arrays.copyOfRange(data, 4, 6), new byte[] {0, 2})) {
-                throw new DataException("Version not match");
+                return "Version not match";
             }
-            throw new DataException("PSB is not support");
+            return "PSB is not support";
         }
         //헤더 빈공간 확인
         if(!Arrays.equals(Arrays.copyOfRange(data, 6, 12), new byte[] {0, 0, 0, 0, 0, 0})) {
-            throw new DataException("Null detected");
+            return "Null detected";
         }
         //채널 추출
         int channels = (data[12] & 0xFF) << 8 | (data[13] & 0xFF) << 0;
+        //높이 추출
         int height = ((data[14] & 0xFF) << 24 | (data[15] & 0xFF) << 16 | (data[16] & 0xFF) << 8 | (data[17] & 0xFF));
+        //너비 추출
         int wide = ((data[18] & 0xFF) << 24 | (data[19] & 0xFF) << 16 | (data[20] & 0xFF) << 8 | (data[21] & 0xFF));
+        //채널 비트심도 추출
+        int bitDepth = ((data[22] & 0xFF) << 8 | (data[23] & 0xFF));
+        if(bitDepth != 1 && bitDepth != 8 && bitDepth != 16 && bitDepth != 32) {
+            return "BitDepth is abnormal";
+        }
 
-        System.out.println(Integer.toString(data[14] & 0xFF) + (data[15] & 0xFF) + (data[16] & 0xFF) + (data[17] & 0xFF));
-        System.out.println(Integer.toString(data[18] & 0xFF) + (data[19] & 0xFF) + (data[20] & 0xFF) + (data[21] & 0xFF));
+        //색상모드 추출
+        String colorMode;
 
-        return Integer.toString(channels) + ' ' + height + ' ' + wide;
+        switch (((data[24] & 0xFF) << 8 | (data[25] & 0xFF))) {
+            case 0:
+                colorMode = "Bitmap";
+                return "Bitmap is not support";
+            case 1:
+                colorMode = "GrayScale";
+                return "GrayScale is not support";
+            case 2:
+                colorMode = "Indexed";
+                return "Indexed is not support";
+            case 3:
+                colorMode = "RGB";
+                break;
+            case 4:
+                colorMode = "CMYK";
+                break;
+            case 7:
+                colorMode = "MultiChannel";
+                return "MultiChannel is not support";
+            case 8:
+                colorMode = "Duotone";
+                return "Duotone is not support";
+            case 9:
+                colorMode = "Lab";
+                return "Lab is not support";
+            default:
+                return "colorMode is abnormal";
+        }
+
+        if (((data[26] & 0xFF) << 24 | (data[27] & 0xFF) << 16 | (data[28] & 0xFF) << 8 | (data[29] & 0xFF)) != 0) {
+            return "Color mode is not 0 " + data[28] + data[29] + data[30] + data[31];
+        }
+        int head = 30;
+        int resources = ((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF));
+        log.info(resources);
+        int i = 0;
+        // 리소스 검증자 (미 구현 계획됨)
+        /*
+        while (resources > i++) {
+            if(!Arrays.equals(Arrays.copyOfRange(data, head, head + 4), new byte[] {56, 66, 73, 77})) {
+                return "image resources is not 8BIM " + head + ' ' + i + ' ' + data[head++] + data[head++] + data[head++] + data[head++];
+            }
+            head += 4;
+            // 리소스 식별자(무시하기 - 헤더 건너뜀) 만약 1045 식별 코드를 보유시 Unicode 정책에 따라 마지막 2개 null,
+            System.out.println(head);
+            if(Arrays.equals(Arrays.copyOfRange(data, head, head + 2), new byte[] {4, 21})) {
+                head += 2;
+            } head += 2;
+            do {
+                head++;
+            } while (!(data[head - 1] == 0 && data[head] == 0));
+            head++;
+            int resource_len = (data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF);
+            head += resource_len; // 리소스 실질데이터(무시하기 - 헤더 건너뜀)
+        }
+        */
+
+        return Integer.toString(channels) + ' '
+                + height + ' ' +
+                wide + ' ' +
+                bitDepth + ' ' +
+                colorMode + ' ' +
+                head;
     }
 }
