@@ -137,9 +137,10 @@ public class RestTestController {
             return "Color mode is not 0 " + data[28] + data[29] + data[30] + data[31];
         }
         int head = 30;
-        int resources = ((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF));
-        log.info(resources);
-        int i = 0;
+        int resources_length = ((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF));
+        log.info(resources_length);
+        head += resources_length;
+
         // 리소스 검증자 (미 구현 계획됨)
         /*
         while (resources > i++) {
@@ -161,11 +162,17 @@ public class RestTestController {
         }
         */
 
+        int layerMask_length = ((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF));
+        int layer_length = ((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF));
+
+
         return Integer.toString(channels) + ' '
                 + height + ' ' +
                 wide + ' ' +
                 bitDepth + ' ' +
                 colorMode + ' ' +
-                head;
+                head + ' ' +
+                (head + layerMask_length) + ' ' +
+                data.length;
     }
 }
