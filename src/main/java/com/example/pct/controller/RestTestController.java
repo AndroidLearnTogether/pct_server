@@ -163,7 +163,7 @@ public class RestTestController {
         */
 
         int layerMask_length = ((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF));
-        int layer_length = ((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF));
+        int layer_length = ((data[head++] & 0xFF) << 8 | (data[head++] & 0xFF));
 
 
         return Integer.toString(channels) + ' '
