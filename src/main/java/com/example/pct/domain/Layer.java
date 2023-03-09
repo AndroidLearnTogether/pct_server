@@ -1,15 +1,22 @@
 package com.example.pct.domain;
 
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Layer {
-    int top;
-    int bottom;
-    int left;
-    int right;
-    int channelCount;
-    int channel;
-    String modeKey;
-    int transparency;
-    boolean clipping;
-    boolean protectTransparency;
-    boolean vision;
+    private int top;
+    private int bottom;
+    private int left;
+    private int right;
+    private int channelCount;
+    private int channel;
+    private String modeKey;
+    private int transparency;
+    private boolean clipping;
+    private boolean protectTransparency;
+    private boolean vision;
 }

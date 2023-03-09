@@ -1,5 +1,6 @@
 package com.example.pct.controller;
 
+import com.example.pct.domain.Layer;
 import com.example.pct.exception.DataException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -138,7 +139,6 @@ public class RestTestController {
         }
         int head = 30;
         int resources_length = ((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF));
-        log.info(resources_length);
         head += resources_length;
 
         // 리소스 검증자 (미 구현 계획됨)
@@ -161,18 +161,35 @@ public class RestTestController {
             head += resource_len; // 리소스 실질데이터(무시하기 - 헤더 건너뜀)
         }
         */
-
         int layerMask_length = ((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF));
-        int layer_length = ((data[head++] & 0xFF) << 8 | (data[head++] & 0xFF));
+        int layer_length = ((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF));
+        int layer_count = ((data[head++]) << 8 | (data[head++] & 0xFF));
 
+        if(layer_count < 0) {
+            layer_count *= -1;
+        }
+        Layer[] layer = new Layer[layer_count];
+        for(int i = 0; i < layer_count; i++) {
+            layer[i] = new Layer();
+        }
+        System.out.println(head);
+        layer[0].setBottom(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
+        layer[0].setBottom(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
+        layer[0].setBottom(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
+        layer[0].setBottom(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
+        layer[0].setChannelCount(((data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
 
-        return Integer.toString(channels) + ' '
-                + height + ' ' +
+        return Integer.toString(channels) + ' ' +
+                height + ' ' +
                 wide + ' ' +
                 bitDepth + ' ' +
                 colorMode + ' ' +
                 head + ' ' +
-                (head + layerMask_length) + ' ' +
+                (head + layerMask_length) + '\n' +
+                layer[0].getTop() + ' ' +
+                layer[0].getLeft() + ' ' +
+                layer[0].getBottom() + ' ' +
+                layer[0].getRight() + '\n' +
                 data.length;
     }
 }
