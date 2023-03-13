@@ -173,10 +173,10 @@ public class RestTestController {
             layer[i] = new Layer();
         }
         System.out.println(head);
+        layer[0].setTop(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
+        layer[0].setLeft(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
         layer[0].setBottom(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
-        layer[0].setBottom(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
-        layer[0].setBottom(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
-        layer[0].setBottom(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
+        layer[0].setRight(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
         layer[0].setChannelCount(((data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
 
         return Integer.toString(channels) + ' ' +
