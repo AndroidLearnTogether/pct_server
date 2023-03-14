@@ -62,7 +62,7 @@ public class RestTestController {
         String tester = "";
 
         int i = 0;
-        while (i < 3000) {
+        while (i < 4000) {
             tester = tester + i + " : " + (data[i] & 0xFF) + ' ' + new String(new byte[] {data[i]}) + '\n';
             i++;
         }
@@ -178,6 +178,7 @@ public class RestTestController {
         layer[0].setBottom(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
         layer[0].setRight(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
         layer[0].setChannelCount(((data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
+        
 
         return Integer.toString(channels) + ' ' +
                 height + ' ' +
