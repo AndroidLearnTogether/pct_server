@@ -13,6 +13,8 @@ public class Layer {
     private int left;
     private int right;
     private int channelCount;
+    private int[] channelId;
+    private int[] channelLine;
     private int channel;
     private String modeKey;
     private int transparency;

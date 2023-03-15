@@ -30,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/test")
@@ -178,7 +179,17 @@ public class RestTestController {
         layer[0].setBottom(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
         layer[0].setRight(((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
         layer[0].setChannelCount(((data[head++] & 0xFF) << 8 | (data[head++] & 0xFF)));
-        
+        int channelId[] = new int[layer[0].getChannelCount()];
+        int channelLine[] = new int[layer[0].getChannelCount()];
+        for(int i = 0; i < layer[0].getChannelCount(); i++) {
+            channelId[i] = ((data[head++] & 0xFF) << 8 | (data[head++] & 0xFF));
+            channelLine[i] = ((data[head++] & 0xFF) << 24 | (data[head++] & 0xFF) << 16 | (data[head++] & 0xFF) << 8 | (data[head++] & 0xFF));
+        }
+        layer[0].setChannelId(channelId);
+        layer[0].setChannelLine(channelLine);
+
+
+
 
         return Integer.toString(channels) + ' ' +
                 height + ' ' +
